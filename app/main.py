@@ -13,8 +13,12 @@ app = Flask(__name__)
 @app.route('/messages',methods = ['POST'])
 def messageListener():
 
+    print("Message received")
+
     # Extract JSON content from request
     content = request.json
+
+    print(content)
     
     # Check that dict has "text" attribute before accessing
     if hasattr(content,"text"):
