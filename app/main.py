@@ -1,7 +1,7 @@
 import requests
-from flask import Flask, request
+from flask import Flask, request, Response
 
-# Hardcoding is bad
+# Hardcoding is bad. shhhh
 url = "https://api.groupme.com/v3/bots/post"
 bot_id = "12ed70cfae0931c89ff0fe0adb"
 trigger = "reginald"
@@ -12,24 +12,24 @@ app = Flask(__name__)
 # Define callback endpoint
 @app.route('/messages',methods = ['POST'])
 def messageListener():
-
+    
     print("Message received")
 
     # Extract JSON content from request
     content = request.json
-
-    print(content)
     
     # Check that dict has "text" attribute before accessing
-    if hasattr(content,"text"):
+    if "text" in content.keys():
 
         # Extract "text" field
         msg = content["text"]
 
         # Send message if incoming message contains trigger string
         if trigger in msg.lower():
-            sendMessage()
-
+            sendMessage(url,bot_id)
+    
+    # Return HTTP code
+    return Response(status=200)
 
 def sendMessage(url,bot_id):
     content = {
@@ -38,3 +38,4 @@ def sendMessage(url,bot_id):
     }
 
     requests.post(url, data=content)
+    print("Message sent")
