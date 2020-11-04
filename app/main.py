@@ -11,21 +11,32 @@ else:
     groupme["url"] = os.getenv("GROUPME_URL")
 
 if os.getenv("BOT_ID") is None:
-    groupme["bot_id"] = "12ed70cfae0931c89ff0fe0adb"
+    groupme["bot_id"] = "1234"
 else:
     groupme["bot_id"] = os.getenv("BOT_ID")
+
+if os.getenv("ENDPOINT_ROUTE") is None:
+    endpoint_route = 'test'
+else:
+    endpoint_route = os.getenv("ENDPOINT_ROUTE")
+
+enable_reginald = True
+if os.getenv("ENABLE_REGINALD") is None:
+    enable_reginald = False
 
 # API endpoint for getting compliemnts
 text_api_url = "https://complimentr.com/api"
 
 # Text to match
-trigger = "hi reginald"
+trigger = "reginald"
 
 # Instantiate web server
 app = Flask(__name__)
 
 # Callback endpoint receives POST request from GroupMe
-@app.route('/messages', methods=['POST'])
+
+
+@app.route('/' + endpoint_route, methods=['POST'])
 def messageListener():
 
     # Extract JSON content from request
@@ -43,19 +54,22 @@ def messageListener():
 
             # Send a compliment
             compliment = getCompliment(text_api_url)
-            sendMessage(compliment, groupme["url"], groupme["bot_id"])
+            sendMessage(compliment, groupme["url"],
+                        groupme["bot_id"], enable_reginald)
 
     # Return HTTP code
     return Response(status=200)
 
 
-def sendMessage(message, url, bot_id):
+def sendMessage(message, url, bot_id, enable):
     content = {
         "bot_id": bot_id,
         "text": message
     }
 
-    requests.post(url, data=content)
+    if enable:
+        requests.post(url, data=content)
+
     print("Message sent: " + message)
 
 
