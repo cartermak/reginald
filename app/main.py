@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 from flask import Flask, request, Response
 
@@ -24,6 +25,11 @@ enable_reginald = True
 if os.getenv("ENABLE_REGINALD") is None:
     enable_reginald = False
 
+# Print to log
+print("GroupMe URL: " + groupme["url"])
+print("GroupMe Bot ID: " + groupme["bot_id"])
+print("Configured endpoint route: " + endpoint_route)
+
 # API endpoint for getting compliemnts
 text_api_url = "https://complimentr.com/api"
 
@@ -34,8 +40,6 @@ trigger = "reginald"
 app = Flask(__name__)
 
 # Callback endpoint receives POST request from GroupMe
-
-
 @app.route('/' + endpoint_route, methods=['POST'])
 def messageListener():
 
@@ -66,6 +70,9 @@ def sendMessage(message, url, bot_id, enable):
         "bot_id": bot_id,
         "text": message
     }
+
+    # Short delay
+    time.sleep(0.5)
 
     if enable:
         requests.post(url, data=content)
